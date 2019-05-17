@@ -4,112 +4,109 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define SIZE_OF_ARRAY 1000
+#define SIZE_OF_ARRAY 10000
 #define CNT_OF_CALC 10
 
-int comp(const int *i, const int *j) {
+int bubble_sort(int *b) {  //пузырьковая сортировка
+    clock_t begin = clock();
+
+    for (int i = 0; i < SIZE_OF_ARRAY - 1; i++)
+        for (int j = 0; j < SIZE_OF_ARRAY - 1 - i; j++)
+            if (b[j] > b[j + 1]) {
+                int tmp = b[j];
+                b[j] = b[j + 1];
+                b[j + 1] = tmp;
+            }
+    clock_t end = clock();
+    double time_spent = (double) (end - begin) / CLOCKS_PER_SEC * 1000;
+
+    return (int) time_spent;
+}
+
+int compare(const int *i, const int *j) {
     return *i - *j;
 }
 
-int bubble_sort() {
-    int arr[SIZE_OF_ARRAY];
-    for (int i = 0; i < SIZE_OF_ARRAY; i++)
-        arr[i] = 0 + rand() % 10;
-
+int standart_sort(int *q) {  //qsort
     clock_t begin = clock();
-    for (int i = 0; i < SIZE_OF_ARRAY - 1; i++)
-        for (int j = 0; j < SIZE_OF_ARRAY - 1 - i; j++)
-            if (arr[j] > arr[j + 1]) {
-                int tmp = arr[j];
-                arr[j] = arr[j + 1];
-                arr[j + 1] = arr[j];
-            }
-    clock_t end = clock();
 
-    double time_spent = (double) (end - begin) / CLOCKS_PER_SEC * 1000000;
+    qsort(q, SIZE_OF_ARRAY, sizeof(int), (int (*)(const void *, const void *)) compare);
+    clock_t end = clock();
+    double time_spent = (double) (end - begin) / CLOCKS_PER_SEC * 100000;
 
     return (int) time_spent;
 }
 
-int standart_sort() {
-    int arr[SIZE_OF_ARRAY];
-    for (int i = 0; i < SIZE_OF_ARRAY; i++)
-        arr[i] = 0 + rand() % 10;
-
-    clock_t begin = clock();
-    qsort(arr, SIZE_OF_ARRAY, sizeof(int), (int (*)(const void *, const void *)) comp);
-    clock_t end = clock();
-    double time_spent = (double) (end - begin) / CLOCKS_PER_SEC * 1000000;
-
-    return (int) time_spent;
-}
-
-int min_sort() {
-    int arr[SIZE_OF_ARRAY];
+int min_sort(int *m) { //сортировка мининумом
     int k, x;
-    for (int i = 0; i < SIZE_OF_ARRAY; i++)
-        arr[i] = 0 + rand() % 10;
 
     clock_t begin = clock();
+
     for (int i = 0; i < SIZE_OF_ARRAY; i++) {
         k = i;
-        x = arr[i];
+        x = m[i];
         for (int j = i + 1; j < SIZE_OF_ARRAY; j++)
-            if (arr[j] < x) {
+            if (m[j] < x) {
                 k = j;
-                x = arr[j];
+                x = m[j];
             }
-        arr[k] = arr[i];
-        arr[i] = x;
+        m[k] = m[i];
+        m[i] = x;
     }
     clock_t end = clock();
-    double time_spent = (double) (end - begin) / CLOCKS_PER_SEC * 1000000;
+    double time_spent = (double) (end - begin) / CLOCKS_PER_SEC * 1000;
 
     return (int) time_spent;
+}
+
+int middle_calc(int *b) {     //вычисление среднего значения
+    double sred = 0;
+    for (int i = 0; i < CNT_OF_CALC; i++)
+        sred += b[i];
+
+    return (int) sred / CNT_OF_CALC;
 }
 
 int main() {
     srand(time(NULL));
     int arrays[CNT_OF_CALC];
+    int basic_array[SIZE_OF_ARRAY];  //базовый массив
+    int b_basic_array[SIZE_OF_ARRAY]; //копия массива №1
+    int q_basic_array[SIZE_OF_ARRAY]; //копия массива №1
+    int m_basic_array[SIZE_OF_ARRAY]; //копия массива №1
+    int cnt_bubble[CNT_OF_CALC]; //время для пузырьковой
+    int cnt_qsort[CNT_OF_CALC]; //время для qsort
+    int cnt_min[CNT_OF_CALC]; //время для минимума
 
-    //Qsort
-
-    double sred = 0;
-    for (int i = 0; i < CNT_OF_CALC; i++) {
-        arrays[i] = standart_sort();
-        sred += arrays[i];
+    for (int cnt = 0; cnt < CNT_OF_CALC; cnt++) {
+        for (int i = 0; i < SIZE_OF_ARRAY; i++) {  //заполнение всех исходных массивов
+            basic_array[i] = 0 + rand() % 10;
+            b_basic_array[i] = basic_array[i];
+            q_basic_array[i] = basic_array[i];
+            m_basic_array[i] = basic_array[i];
+        } //заполнение массивов времени
+        cnt_bubble[cnt] = bubble_sort(b_basic_array);
+        cnt_qsort[cnt] = standart_sort(q_basic_array);
+        cnt_min[cnt] = min_sort(m_basic_array);
     }
-    qsort(arrays, CNT_OF_CALC, sizeof(int), (int (*)(const void *, const void *)) comp);
+    qsort(cnt_bubble, CNT_OF_CALC, sizeof(int), (int (*)(const void *, const void *)) compare);
+    qsort(cnt_qsort, CNT_OF_CALC, sizeof(int), (int (*)(const void *, const void *)) compare);
+    qsort(cnt_min, CNT_OF_CALC, sizeof(int), (int (*)(const void *, const void *)) compare);
+
+    printf("Время сортировки \"пузырьком\":\n");
+    printf("Минимальное время: %d мкс\nСреднее время: %d мкс\nМаксимальное время: %d мкс\n\n", cnt_bubble[0],
+           middle_calc(cnt_bubble),
+           cnt_bubble[CNT_OF_CALC - 1]);
+
     printf("Время стандартной сортировки qsort:\n");
-    printf("Минимальное время: %d мкс\nСреднее время: %d мкс\nМаксимальное время: %d мкс\n", arrays[0],
-           (int) sred / CNT_OF_CALC,
-           arrays[CNT_OF_CALC - 1]);
+    printf("Минимальное время: %d мкс\nСреднее время: %d мкс\nМаксимальное время: %d мкс\n\n", cnt_qsort[0],
+           middle_calc(cnt_qsort),
+           cnt_qsort[CNT_OF_CALC - 1]);
 
-    //Пузырьком
-
-    sred = 0;
-    for (int i = 0; i < CNT_OF_CALC; i++) {
-        arrays[i] = bubble_sort();
-        sred += arrays[i];
-    }
-    qsort(arrays, CNT_OF_CALC, sizeof(int), (int (*)(const void *, const void *)) comp);
-    printf("\nВремя сортивки \"пузырьком\":\n");
-    printf("Минимальное время: %d мкс\nСреднее время: %d мкс\nМаксимальное время: %d мкс\n", arrays[0],
-           (int) sred / CNT_OF_CALC,
-           arrays[CNT_OF_CALC - 1]);
-
-    //Минимумом
-
-    sred = 0;
-    for (int i = 0; i < CNT_OF_CALC; i++) {
-        arrays[i] = min_sort();
-        sred += arrays[i];
-    }
-    qsort(arrays, CNT_OF_CALC, sizeof(int), (int (*)(const void *, const void *)) comp);
-    printf("\nВремя сортивки \"минимумом\":\n");
-    printf("Минимальное время: %d мкс\nСреднее время: %d мкс\nМаксимальное время: %d мкс\n", arrays[0],
-           (int) sred / CNT_OF_CALC,
-           arrays[CNT_OF_CALC - 1]);
+    printf("Время сортивки \"минимумом\":\n");
+    printf("Минимальное время: %d мкс\nСреднее время: %d мкс\nМаксимальное время: %d мкс", cnt_min[0],
+           middle_calc(cnt_min),
+           cnt_min[CNT_OF_CALC - 1]);
 
     return (0);
 }
