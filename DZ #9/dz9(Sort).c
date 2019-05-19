@@ -104,7 +104,7 @@ int main() {
            cnt_qsort[CNT_OF_CALC - 1]);
 
     printf("Время сортивки \"минимумом\":\n");
-    printf("Минимальное время: %d мкс\nСреднее время: %d мкс\nМаксимальное время: %d мкс", cnt_min[0],
+    printf("Минимальное время: %d мкс\nСреднее время: %d мкс\nМаксимальное время: %d мкс\n", cnt_min[0],
            middle_calc(cnt_min),
            cnt_min[CNT_OF_CALC - 1]);
 
