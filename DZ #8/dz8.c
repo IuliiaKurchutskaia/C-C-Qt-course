@@ -8,12 +8,12 @@
 #include <time.h>
 #include <stdlib.h>
 
-#define MAXSIZE 5
+#define MAXSIZE 5 //Максимальное количество задач
 
 struct stack {
-    int stk[MAXSIZE]; //name
-    int top; //count
-    int time[MAXSIZE]; //timer
+    int stk[MAXSIZE];
+    int top; //номер последнего добавленного эл-та
+    int time[MAXSIZE];
 };
 
 typedef struct stack STACK;
@@ -58,7 +58,7 @@ void main() {
     }
 }
 
-/*  Function to add an element to the stack */
+/*  Добавление элементов в список */
 
 void push() {
     int cnt = 0;
@@ -99,7 +99,7 @@ void push() {
     }
 }
 
-/*  Function to delete an element from the stack */
+/*  Выполнение и удаление элемента из списка */
 
 int pop_que() {
     if (s.top == 0) {
@@ -134,13 +134,13 @@ int pop_stack() {
 
     return (0);
 }
-/*  Function to display the status of the stack */
+/*  Вывод списка задач */
 
 void display() {
     if (s.top == 0) {
         printf("Список задач пуст!\n");
         return;
-    } else { //STACK. For que i=1; i<=s.top; i++
+    } else {
         printf("\n Список задач: \n");
         for (int i = 1; i <= s.top; i++) {
             printf("Задача № %d, время выполнения - %d\n", s.stk[i], s.time[i]);
