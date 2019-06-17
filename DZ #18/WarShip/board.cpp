@@ -295,17 +295,19 @@ bool Board::chk_ships_placed()
     return once && two && three && quad;
 }
 
-void Board::shot(int i, int j)
+bool Board::shot(int i, int j)
 {
     if (board_[calc_index(i,j)] == empty)
     {
         board_[calc_index(i,j)] = lose;
         visible_board[calc_index(i,j)] = lose;
+        return false;
     }
     else if (board_[calc_index(i,j)] == squad)
     {
         board_[calc_index(i,j)] = values::shot;
         visible_board[calc_index(i,j)] = values::shot;
+        return true;
     }
 
 }

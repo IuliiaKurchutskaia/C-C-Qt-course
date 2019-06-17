@@ -40,22 +40,32 @@ void create_board(Board &my_board)
         }
 }
 /*===============Стрельба игрока==============*/
-void my_shot(Board &PC)
+bool my_shot(Board &PC)
 {
     cout << endl << "Ход игрока" << endl;
 
     auto pos = utils::ask_pos();
 
-    PC.shot(pos.first,pos.second);
+    if(PC.shot(pos.first,pos.second))
+    {
+        cout << "Попадание!" << endl;
+        return true;
+    }
+    return false;
 }
 /*================Стрельба ИИ=================*/
-void PC_shot(Board &player)
+bool PC_shot(Board &player)
 {
     cout << "Ход ИИ" << endl;
     int i = rand()%10;
     int j = rand()%10;
 
-    player.shot(i,j);
+    if(player.shot(i,j))
+    {
+        cout << "Попадание!" << endl;
+        return true;
+    }
+    return false;
 }
 /*===================Ход игры=================*/
 void game_begun(Board &player, Board &PC)
@@ -63,12 +73,21 @@ void game_begun(Board &player, Board &PC)
     bool chk_end = false;
     while (!chk_end)
     {
+        bool chk_shot = true;
         system("clear");
         cout << endl << "Поле игрока";
         player.draw();
         cout << endl << "Поле противника";
-        PC.draw_visible();
-        my_shot(PC);
+        while (chk_shot)
+        {
+            PC.draw_visible();
+            if(PC.chk_finish())
+                break;
+            if(!my_shot(PC))
+            {
+                chk_shot = false;
+            }
+        }
         if (PC.chk_finish())
         {
             chk_end = true;
@@ -76,7 +95,15 @@ void game_begun(Board &player, Board &PC)
             cout << "Выиграл игрок" << endl;
             break;
         }
-        PC_shot(player);
+        chk_shot = true;
+        while (chk_shot)
+        {
+            player.draw();
+            if (player.chk_finish())
+                break;
+            if(!PC_shot(player))
+                chk_shot = false;
+        }
         if (PC.chk_finish())
         {
             chk_end = true;

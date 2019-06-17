@@ -53,7 +53,7 @@ public:
 
     void draw();                                                             //Рисование доски
     void draw_visible();                                                     //Рисование результатов выстрелов
-    void shot(int i, int j);                                                 //Выстрелы по полям
+    bool shot(int i, int j);                                                 //Выстрелы по полям
 
 };
 
